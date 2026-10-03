@@ -1,0 +1,495 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TKA SMA 2026 — Admin</title><script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script><style>
+:root{--navy:#12334a;--teal:#1d9a9a;--bg:#f4f7f9;--text:#213544;--muted:#6d7b85;--border:#dce6ea;--green:#1f8a62;--red:#bd3d49;--amber:#a16b08}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}.top{background:var(--navy);color:#fff;padding:18px}.topin,.wrap{max-width:1400px;margin:auto}.topin{display:flex;justify-content:space-between;align-items:center;gap:12px}.top h1{margin:0;font-size:20px}.wrap{padding:20px 14px}.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 5px 20px #12334a0a}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.field input,.field select{width:100%;padding:11px;border:1px solid var(--border);border-radius:9px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:900;cursor:pointer;transition:.15s}.btn:active{transform:scale(.97)}.primary{background:var(--teal);color:#fff}.secondary{background:#edf2f4;color:var(--navy)}.danger{background:#bd3d49;color:#fff}.btn:disabled{opacity:.55;cursor:not-allowed}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--border);border-radius:13px;padding:14px}.stat strong{display:block;font-size:25px;color:var(--navy)}.stat span{font-size:11px;color:var(--muted);font-weight:800}.tablewrap{overflow:auto}.table{border-collapse:collapse;width:100%;min-width:1500px;font-size:12px}.table th,.table td{border:1px solid var(--border);padding:9px;text-align:left;vertical-align:top}.table th{background:#eef7f6;color:var(--navy)}.ok{color:var(--green);font-weight:900}.bad{color:var(--red);font-weight:900}.muted{color:var(--muted)}.modal{position:fixed;inset:0;background:#12334a88;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}.modalbox{background:#fff;border-radius:16px;max-width:1200px;width:100%;max-height:90vh;overflow:auto;padding:20px}.modalhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;position:sticky;top:-20px;z-index:10;background:#fff;padding:0 0 14px}.detail-table{width:100%;border-collapse:collapse;min-width:900px}.detail-table th,.detail-table td{border:1px solid var(--border);padding:9px;vertical-align:top}.detail-table th{background:#eef7f6}.analysis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.analysis>div{min-width:0}.analysis .tablewrap{max-width:100%;overflow-x:auto}.analysis .detail-table{min-width:0;width:100%;table-layout:fixed}.analysis .detail-table th:nth-child(1),.analysis .detail-table td:nth-child(1){width:58px}.analysis .detail-table th:nth-child(3),.analysis .detail-table td:nth-child(3){width:90px}.analysis .detail-table th:nth-child(4),.analysis .detail-table td:nth-child(4){width:85px}.analysis .detail-table td:nth-child(2){overflow-wrap:anywhere;word-break:break-word}.badge{font-weight:900}.check{width:17px;height:17px}.notice{padding:12px;border-radius:10px;background:#fff7e8;color:#805d0a}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.small{font-size:11px}.empty{padding:18px;text-align:center;color:var(--muted)}.answer-detail{display:flex;flex-direction:column;gap:5px}.answer-option{padding:6px 8px;border-radius:8px;background:#f6f8f9}.answer-option.selected{background:#eef4ff;border-left:3px solid #2f6fdd;color:#245bb5}.answer-option.correct{background:#eef4ff;border-left:3px solid #2f6fdd;color:#245bb5}.answer-option.wrong{background:#fff0f1;border-left:3px solid var(--red);color:var(--red)}.num-list{font-weight:800;line-height:1.8}.loading-overlay{position:fixed;inset:0;background:rgba(18,51,74,.28);display:none;align-items:center;justify-content:center;z-index:100}.loading-overlay.show{display:flex}.loading-box{background:#fff;border-radius:14px;padding:18px 22px;box-shadow:0 10px 35px #12334a33;display:flex;align-items:center;gap:12px;font-weight:800;color:var(--navy)}.spinner{width:22px;height:22px;border:3px solid #dce6ea;border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:900px){.grid,.stats,.analysis{grid-template-columns:1fr 1fr}}@media(max-width:600px){.grid,.stats,.analysis{grid-template-columns:1fr}.topin{align-items:flex-start}.top h1{font-size:16px}}
+</style></head><body><div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><span class="spinner"></span><span id="loadingText">Memuat data…</span></div></div><div class="top"><div class="topin"><div><h1>TKA SMA 2026 — Admin Dashboard</h1><div style="opacity:.75;font-size:12px">Data hasil siswa • private admin</div></div><button class="btn secondary" onclick="loadData(this)">Refresh Data</button></div></div><div class="wrap">
+<div class="card"><h3 style="margin-top:0">Filter Hasil</h3><div class="grid"><div class="field"><label>Tanggal</label><input type="date" id="date"></div><div class="field"><label>Kelas</label><select id="class"><option value="">Semua kelas</option><option>12-PTN-1</option><option>12P1 26/27</option></select></div><div class="field"><label>Sesi</label><select id="slot"><option value="">Semua sesi</option><option>16.30–18.00</option><option>19.00–21.30</option><option>All the time</option></select></div><div class="field"><label>Nama siswa</label><input id="name" list="studentNameList" type="text" placeholder="Ketik nama siswa atau pilih dari daftar" autocomplete="off"><datalist id="studentNameList"><option value="Semua siswa"></option></datalist></div></div><div class="actions"><button class="btn primary" onclick="loadData(this)">Terapkan Filter</button><button class="btn secondary" onclick="resetFilters(this)">Reset</button><button class="btn primary" onclick="downloadExcel()">Download Excel</button><button class="btn secondary" onclick="downloadCSV()">Download CSV</button><button class="btn danger" onclick="removeSelected()">Remove yang dicentang</button><button class="btn danger" onclick="removeAll()">Remove Semua Data</button></div><div class="notice" style="margin-top:12px">Setiap remove akan meminta konfirmasi. Data yang dihapus dari dashboard juga dihapus dari sheet <b>Attempts</b> dan <b>Responses</b>.</div><details style="margin-top:12px"><summary style="cursor:pointer;font-weight:800">Koneksi database</summary><input id="api" style="width:100%;margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:9px"><button class="btn secondary" style="margin-top:8px" onclick="saveApi()">Simpan URL</button><div id="apiStatus" class="small muted" style="margin-top:6px"></div></details></div>
+<div class="stats"><div class="stat"><span>Attempts</span><strong id="sAttempts">0</strong></div><div class="stat"><span>Rata-rata nilai</span><strong id="sAvg">—</strong></div><div class="stat"><span>Total benar</span><strong id="sCorrect">0</strong></div><div class="stat"><span>Total salah</span><strong id="sWrong">0</strong></div></div>
+<div class="card"><h3>Hasil Siswa</h3><div class="tablewrap"><table class="table"><thead><tr><th><input type="checkbox" class="check" id="checkAll" onclick="toggleAll(this)"></th><th>Tanggal</th><th>Nama</th><th>WA</th><th>Kelas</th><th>Sesi</th><th>Kode Tes</th><th>Benar</th><th>Salah</th><th>Kosong</th><th>Nilai</th><th>Pelanggaran</th><th>Durasi</th><th>Waktu Selesai</th><th>Penyebab selesai</th><th>Detail</th></tr></thead><tbody id="tbody"><tr><td colspan="16" class="empty">Memuat data…</td></tr></tbody></table></div></div>
+<div class="card"><h2>Analisis Soal</h2><div class="grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>Tanggal</label><select id="questionAnalysisDate"><option value="">Semua tanggal</option></select></div><div class="field"><label>Sesi</label><select id="questionAnalysisSlot"><option value="">Semua sesi</option><option>16.30–18.00</option><option>19.00–21.30</option><option>All the time</option></select></div></div><div class="actions"><button class="btn secondary" onclick="loadAnalysis(this)">Tampilkan Analisis</button><button class="btn secondary" onclick="resetQuestionAnalysisFilters()">Reset</button></div><div class="analysis" style="margin-top:16px"><div><h3>Soal dengan jawaban benar terbanyak</h3><div class="tablewrap"><table class="detail-table"><thead><tr><th>No.</th><th>Soal</th><th>Benar</th><th>% Benar</th><th>Nama siswa yang benar</th></tr></thead><tbody id="bestCorrect"><tr><td colspan="5" class="empty">Belum ada data.</td></tr></tbody></table></div></div><div><h3>Soal dengan jawaban salah terbanyak</h3><div class="tablewrap"><table class="detail-table"><thead><tr><th>No.</th><th>Soal</th><th>Salah</th><th>% Salah</th><th>Nama siswa yang salah</th></tr></thead><tbody id="bestWrong"><tr><td colspan="5" class="empty">Belum ada data.</td></tr></tbody></table></div></div></div><div class="card"><h2>Analisis Jawaban per Siswa</h2><div class="grid" style="grid-template-columns:1fr 1fr 2fr"><div class="field"><label>Tanggal</label><select id="studentAnalysisDate"><option value="">Semua tanggal</option></select></div><div class="field"><label>Sesi</label><select id="studentAnalysisSlot"><option value="">Semua sesi</option><option>16.30–18.00</option><option>19.00–21.30</option><option>All the time</option></select></div><div class="field"><label>Pilih siswa / Kode Tes</label><select id="studentAttempt"><option value="">Pilih siswa / Kode Tes</option></select></div><div class="actions" style="align-items:end;margin-top:0"><button class="btn primary" onclick="loadStudentAnalysis()">Tampilkan Jawaban</button><button class="btn secondary" onclick="resetStudentAnalysisFilters()">Reset</button></div></div><div id="studentSummary" class="notice" style="margin-top:12px;display:none"></div><div class="tablewrap" style="margin-top:12px"><table class="detail-table"><thead><tr><th>No.</th><th>Jenis</th><th>Pertanyaan</th><th>Jawaban Siswa</th><th>Jawaban Benar</th><th>Status</th></tr></thead><tbody id="studentAnalysisBody"><tr><td colspan="6" class="empty">Pilih siswa untuk melihat Q1–Q30.</td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><div><h2 id="modalTitle" style="margin:0">Detail Jawaban</h2><div id="modalMeta" class="muted" style="margin-top:5px"></div></div><button class="btn danger" onclick="closeModal()">Tutup</button></div><div class="tablewrap" style="margin-top:16px"><table class="detail-table"><thead><tr><th>No.</th><th>Jenis</th><th>Pertanyaan</th><th>Jawaban Siswa</th><th>Jawaban Benar</th><th>Status</th></tr></thead><tbody id="detailBody"><tr><td colspan="6" class="empty">Memuat…</td></tr></tbody></table></div></div></div>
+<p class="muted">Design by <b>Azzahra Kautsar Soud, S.Pd</b></p></div>
+<script>
+const QUESTION_BANK = [
+{n:1,type:"MC",passage:`The Lion and the Mouse
+
+Once upon a time, in a thick jungle in Africa, there lived a strong and fierce lion. Every afternoon, the lion would rest under the cool shade of a big tree after walking through the forest.
+
+One day, while he was sleeping, a playful little mouse passed by. The mouse saw the lion's thick mane and was curious. He climbed up and began to jump around on the lion's head, playing in his mane.
+
+The lion woke up suddenly and was not happy at all. He quickly caught the mouse in his big paw and roared, "Who dares to wake me up?" He was very angry and almost killed the mouse.
+
+Scared and shaking, the mouse begged the lion, "Please don't kill me! I didn't mean to bother you. If you let me go, I promise I'll help you one day."
+
+The lion laughed loudly. "You? Help me? That's funny." But the lion was feeling kind, so he let the mouse go free.
+
+A few days later, the lion was walking through the jungle again when he fell into a trap. A net set by hunters caught him, and he couldn't escape. He tried to bite and tear the ropes, but they were too strong. The lion roared loudly, hoping someone would come.
+
+The mouse heard the roar and ran to help. He saw the lion trapped and quickly started to chew the ropes with his sharp teeth. After some time, the net broke, and the lion was free.
+
+The lion looked at the mouse with surprise and said, "Thank you! You really saved my life."
+
+The mouse smiled and said, "I told you I would help you one day."
+
+From that moment on, the lion and the mouse became close friends. The lion learned that even small creatures can do great things, and we all need help sometimes.`,q:"Which option best summarizes the story?",opts:["Beginning: A lion was walking through the jungle. Problem: The mouse got lost and couldn't find food. Solution: The lion gave food to the mouse. Lesson: Always be generous to those in need.","Beginning: A mouse accidentally disturbed a sleeping lion. Problem: The lion was caught in a hunter's net. Solution: The mouse chewed through the net and set the lion free. Lesson: Even the smallest creature can be a great help.","Beginning: The lion and mouse were best friends. Problem: The lion got hurt in a fight. Solution: The mouse helped him find water. Lesson: Friendship is built on adventure.","Beginning: A mouse was building a home near a tree. Problem: A storm destroyed the tree and trapped the lion. Solution: The mouse called for help from the jungle. Lesson: Teamwork solves big problems.","Beginning: A lion was hungry and searching for food. Problem: He couldn't catch any prey. Solution: The mouse helped him find food. Lesson: Hunger teaches humility."],ans:[1]},
+{n:2,type:"MCMA",q:"Which of the following statements best conveys the message of the story?",opts:["We should never wake up a sleeping animal","Even the small and weak can help the strong","It's always good to ask for help when we need it","Lions are dangerous animals and should be avoided","Never trust anyone who plays with your hair"],ans:[1,2]},
+{n:3,type:"MC",q:"Why did the lion trust the mouse and decide to let him go instead of eating him?",opts:["The lion was too tired to eat the mouse","The mouse told the lion he might help him one day","The lion was feeling happy to see the mouse","The lion heard someone coming and got scared","The mouse promised to bring food for the lion"],ans:[1]},
+{n:4,type:"MCMA",q:"As you read the part where the lion let the mouse go, which of the following endings do you anticipate?",opts:["The mouse forgets about the lion and never helps him","The lion gets into trouble and no one helps him","The lion becomes angry at all small animals","The mouse spreads the lion's kindness to other animals","The mouse becomes the lion's loyal assistant"],ans:[3,4]},
+{n:5,type:"MCMA",q:"Which of the following sentences from the story help you understand the lion's character?",opts:["The lion always took his afternoon nap under the shade of a big tree in the bushes.","He caught the mouse and questioned him for interrupting his nap.","The lion was amused at the mouse's words and decided to spare his life.","With his sharp teeth, the mouse nibbled through the net.","The lion thanked the mouse immensely for his help."],ans:[1,2,4]},
+{n:6,type:"MC",passage:`Effective Study Techniques
+
+1. Know Your Learning Style — Understand whether you learn best by reading, listening, or watching.
+2. Set a Consistent Study Schedule — Study at the same time every day. Regularity helps build strong habits.
+3. Create a Comfortable Study Space — Find a quiet, well-lit, distraction-free area.
+4. Use the Pomodoro Technique — Study for 25 minutes, then take a 5-minute break. This keeps your mind fresh and focused.
+5. Take Effective Notes — Write key points using methods like mind maps or tables.
+6. Practice and Repeat — Regularly review material and do practice questions.
+7. Join a Study Group — Discuss topics with friends to gain insights and solve problems together.
+8. Leverage Technology — Use apps and websites for flashcards, video lessons, or quizzes.
+9. Get Enough Sleep — Aim for 7–8 hours.
+10. Be Patient and Persistent — Learning takes time.`,q:"Based on the information given, we can keep our mind focused and fresh by ....",opts:["knowing your learning style","using Pomodoro Technique","using online quizzes apps","by reviewing materials","by creating mind maps"],ans:[1]},
+{n:7,type:"CAT",q:"Based on the infographic, determine whether each study technique listed on the left is categorized as Time Management or Self Management.",rows:[["Be patient and persistent",["Self Management","Time Management"]],["Use the Pomodoro technique",["Self Management","Time Management"]],["Set a consistent study schedule",["Self Management","Time Management"]]],ans:["Self Management","Time Management","Time Management"]},
+{n:8,type:"MC",passage:`Effective Study Techniques (see the ten techniques listed in Question 6).`,q:'From the options provided, choose the sequence that best reflects the information in the infographic "Effective Study Techniques".',opts:["Set your goal → Watch lessons videos → Sleep well → Have group chat with friends → Eat nutritious meal","Plan study time → Join a study group → Take long breaks → Write a to do list → Write important points","Know your learning style → Find a quiet area → Set a timetable → Use less gadgets → Be patient and persistent","Know your study style → Plan your study time → Practice and repeat → Take a break → Watch lessons videos","Take notes → Join a study groups → Use different medias → Play music you like → Have good meal while studying"],ans:[2]},
+{n:9,type:"MCMA",passage:`Effective Study Techniques (see the ten techniques listed in Question 6).`,q:"Which of the following statements best reflect the author's purpose in writing the text?",opts:["To help students find fun strategies to play after studying","To offer students guidance on how to learn more efficiently","To encourage students to use simple habits to improve their learning","To explain why studying tips is difficult for most students","To show students that they can manage their time and focus better"],ans:[1,2,4]},
+{n:10,type:"MCMA",passage:`Effective Study Techniques (see the ten techniques listed in Question 6).`,q:"If you are preparing for an important exam and want to improve your study routine, which of the following techniques do you think can be implemented effectively in your personal study time?",opts:["Only study when you are in a group discussion with others","Use technology during all study sessions in or outside class","Use the Pomodoro Technique to structure your study and break time","Practice and repeat study material regularly to retain information","Create a quiet and comfortable study space to improve focus"],ans:[2,3,4]},
+{n:11,type:"MCMA",passage:`The Great Barrier Reef
+
+The Great Barrier Reef is one of the most beautiful places in the world. It is located in the Pacific Ocean, near the northeast coast of Australia. The reef is very big. It stretches over 2,000 kilometers and can even be seen from space. There are many small coral islands and clear, warm waters around the reef.
+
+This reef is full of life. There are many kinds of colorful fish, sea turtles, dolphins, and even sharks. Coral of different shapes and colors grows under the water. Sea birds fly over the reef and nest on small islands. People can see this beauty by swimming, diving, or joining a boat tour.
+
+The colors under the water are amazing. Coral comes in red, yellow, green, and blue. Some coral looks like trees, and some looks like big round stones. Small fish swim in and out of the coral like they are playing a game. In some places, soft coral moves with the water like grass in the wind. When the sun shines, the reef looks bright and full of light. It feels like a different world under the sea.
+
+The reef is not only beautiful, but also very important. It helps protect the coast from big waves and storms. It is a home for sea animals and a place where plants can grow. Many people also get food and jobs from the sea near the reef. Without the reef, the ocean would not be the same.`,q:"Which of the following descriptions are mentioned clearly in the text?",opts:["The reef was built by local communities over hundreds of years","The reef is located in the Pacific Ocean near Australia","The reef can help protect the coast from big waves","The reef is home to sea turtles and dolphins","The reef has more than 10,000 coral islands"],ans:[1,2,3]},
+{n:12,type:"MC",passage:`The Great Barrier Reef
+
+The author describes colorful coral, sea animals, clear warm waters, and a reef that helps protect the coast.`,q:'The author mentioned "It feels like a different world under the sea". What does the phrase "a different world under the sea" most likely mean?',opts:["A safe place that has bright reef","A peaceful place where people can live under water","A colorful place that looks the same as the land","A shining reef that is quiet","A calm place that looks beautiful and unique"],ans:[4]},
+{n:13,type:"MC",passage:`The Great Barrier Reef
+
+The reef is beautiful, full of life, and important for coastal protection, sea animals, plants, food, and jobs.`,q:"Which of the following best represents the main idea implied by the text?",opts:["The reef is useful for fishing and shipping","The reef is large, but not important to people","The reef is a natural treasure that must be cared for","The reef is only for scientists and researchers to explore","The reef is a protected area that should be closed to visitors"],ans:[2]},
+{n:14,type:"MC",passage:`The Great Barrier Reef
+
+People can see the reef by swimming, diving, or joining a boat tour.`,q:"Which detail would best encourage people to visit the Great Barrier Reef?",opts:["Visitors can see an Australian national park","Visitors can stay in hotels around the reef","Visitors can get there by boat or short flights","Visitors can protect the coral and the animals","Visitors can see the coral by diving or swimming"],ans:[4]},
+{n:15,type:"MCMA",passage:`The Great Barrier Reef
+
+The reef has colorful coral, many sea animals, and helps protect the coast from big waves and storms.`,q:"Which parts of the text best support the idea that the Great Barrier Reef is both beautiful and important?",opts:["The reef helps protect the coast from big waves","It is home to sea turtles, dolphins, and colorful fish","The coral reefs grow best in cold, deep water","Some areas of the reef are damaged by starfish and warm water","The reef was discovered by sailors in the 1800s"],ans:[0,1]},
+{n:16,type:"CAT",q:"Classify each financial goal as a short-term or long-term goal.",passage:`Why Teenagers Should Learn to Manage Their Money
+
+Many young people today often spend money on things they like, such as snacks, clothes, or fun activities. But learning to handle money from a young age is very important. Good money habits can help students make a better future.
+
+Students should think about short-term goals, like getting a new phone, and long-term goals, like saving for college or starting a business. A budget helps students decide how much money to save, spend, or keep for unexpected problems. Keeping track of spending with notes or apps helps students understand their habits. Saving is safer but slower, while investing has more risk but can earn more money.`,rows:[["Saving money for university",["Long-term financial goals","Short-term financial goals"]],["Saving to buy a new phone",["Long-term financial goals","Short-term financial goals"]],["Starting a business",["Long-term financial goals","Short-term financial goals"]]],ans:["Long-term financial goals","Short-term financial goals","Long-term financial goals"]},
+{n:17,type:"MCMA",passage:`Why Teenagers Should Learn to Manage Their Money
+
+The text recommends planning goals, making a budget, tracking spending, and understanding saving and investing choices.`,q:"According to the text, which of the following actions support smart money management for students?",opts:["Tracking daily expenses using a notebook or app","Spending more money than the monthly budget allows","Setting financial goals for the short and long term","Borrowing money whenever there is not enough left","Dividing money into saving, spending, and emergency funds"],ans:[0,2,4]},
+{n:18,type:"MCMA",passage:`Why Teenagers Should Learn to Manage Their Money
+
+The text is written for young people/students learning to plan, budget, track spending, and understand saving choices.`,q:"Who is most likely to be the target audience of this text?",opts:["Teenagers who are learning to manage their money","Parents looking for tips on how to control their children's spending","Students who want to plan for their financial future","High school readers who need to understand saving and budgeting","Bankers and financial experts"],ans:[0,2,3]},
+{n:19,type:"MC",passage:`Table 1. How do students manage their money?
+Students who save regularly — 45%
+Students who track expenses — 35%
+Students with financial education — 25%
+Students who often borrow from friends — 30%
+Students who spend most on food & drinks — 50%
+Students who plan monthly budgets — 28%`,q:"Which information would make the text more informative about student spending habits?",opts:["A paragraph about the history of financial education in schools","A table showing common monthly high school students expenses","A graph comparing saving habits between teenagers and adults","A chart listing popular entertainment choices among students","A paragraph about students' experiences in managing budget"],ans:[1]},
+{n:20,type:"MCMA",passage:`Table 1. How do students manage their money?
+Students who save regularly — 45%
+Students who track expenses — 35%
+Students with financial education — 25%
+Students who often borrow from friends — 30%
+Students who spend most on food & drinks — 50%
+Students who plan monthly budgets — 28%`,q:"Which of the following statements are supported by clear data or facts in the text and table?",opts:["45% of students save money regularly","Tracking expenses can help understand spending habits","Most students do not care about money at all","Saving 10% of allowance is a good practice","Spending on fun activities is always better than saving"],ans:[0,1,3]},
+{n:21,type:"MC",passage:`The False Lion King
+
+Once upon a time, in Africa, there lived two lion kings. One was named Hera and the other was Shero. Hera was very strong and handsome. All the animals loved and respected him. He was a great leader. Shero was not like Hera. He had a small mane and a funny, squeaky voice. Shero liked to pretend he was as powerful as Hera. He often copied Hera's roar, but it made the other animals laugh.
+
+One day, the animals heard that some hyenas were causing trouble near the river. Hera quickly gathered his followers to stop the hyenas. Shero also wanted to come. He wanted to show everyone that he was strong too. When they reached the river, Hera roared loudly. His roar was so powerful that the hyenas got scared. Shero also tried to roar, but his voice was high and silly. The hyenas laughed at him.
+
+Hera stayed calm and smiled. Shero did not give up. He said, "I am just as strong as Hera!" The hyenas laughed even louder. Shero tried to show his power by jumping on a small dirt hill. But he tripped and fell into the ground. The hyenas laughed so much they cried. Even Hera laughed a little.
+
+At the end of the day, the hyenas left, still laughing about Shero. Hera told Shero, "You are not like me, but you make everyone happy with your jokes." Shero smiled and understood that he had his own special gift. From that day, Shero became the kingdom's jester. He and Hera ruled together, one with strength, and one with laughter. The animals learned that both power and fun are important in life.`,q:"Which statement provides the most accurate chronological summary of the story's main events?",opts:["Shero falls into the dirt. The hyenas cause trouble at the river. Hera tells Shero that he is funny. Shero copies Hera's roar. Shero becomes the kingdom's funny helper.","Hera is a strong lion king. Shero likes to pretend to be strong. The hyenas cause trouble near the river. Hera scares the hyenas, but Shero makes them laugh. Shero learns that making others happy is special.","Hera and Shero are both strong leaders. The hyenas come to help the lions. Shero tells funny stories to the hyenas. Hera is angry with Shero. The lions and hyenas become friends.","Shero is a strong lion king. Hera is jealous of Shero. The hyenas attack the lions. Shero defeats the hyenas. Shero becomes the new king.","Shero wants to be king and fights Hera. The hyenas help Shero. Hera leaves the kingdom. Shero becomes king. Hera returns to forgive Shero."],ans:[1]},
+{n:22,type:"MCMA",passage:`The False Lion King
+
+Hera is strong and respected, while Shero is funny and clumsy. In the end, they rule together using different strengths.`,q:"What can we learn from the story of Hera and Shero?",opts:["Everyone has something special to give, even if they are not the leader","Being funny and making others smile is just as important as being strong","Good friends will support you and help you see your real strengths","Working together is better when people use their different talents","Trying your best to help others is more important than always being perfect"],ans:[0,1,2,3,4]},
+{n:23,type:"MC",passage:`The False Lion King
+
+Shero copied Hera's roar, but his voice was high and silly. The hyenas laughed at him.`,q:"The hyenas laugh so much when Shero tries to roar like Hera because ....",opts:["Shero tries to roar in a serious way and surprises the hyenas","Shero's roar is funny, which the hyenas think he is joking","Hera tells a joke about Shero to make the hyenas laugh","Shero is acting like Hera, and it's absolutely brilliant","Shero trips and falls when trying to show his strength"],ans:[1]},
+{n:24,type:"MCMA",passage:`The False Lion King
+
+Imagine that, at the beginning of the story, Shero is a strong lion with a loud roar, just like Hera.`,q:"If in the beginning of the story, Shero is a strong lion with a loud roar, just like Hera. What would happened in the end of the story?",opts:["Shero and Hera would both scare the hyenas away together","Shero would become the king, and Hera would leave the savannah","Shero would get respect from the other animals for his strength","The hyenas would still laugh at Shero because he is funny","Shero would try to take Hera's place as the only lion king"],ans:[0,2]},
+{n:25,type:"MCMA",passage:`The False Lion King
+
+Shero has a small mane, a funny squeaky voice, copies Hera's roar, claims he is as strong as Hera, and trips when trying to show his power.`,q:"Shero is clumsy and funny, this is shown when he ....",opts:["scares the hyenas away with his loud and powerful roar","makes the other animals smile by pretending to be a great king","tries to roar like Hera, but his voice is small and makes the hyenas laugh","walks with Hera to confront the hyenas, acting as if he is an important king too","tells the hyenas that he is as mighty as King Hera, even though no one believes him"],ans:[1,2,3,4]},
+{n:26,type:"MC",passage:`Should Museums Use More Interactive Technology?
+
+Recently, many museums have started using interactive technology to make their exhibitions more engaging. Some believe museums should use more technology because it can provide better learning experiences, especially for young visitors. Others argue that museums should not depend too heavily on technology because original objects remain important.
+
+Interactive technology can make historical information more accessible. Visitors can examine the appearance of an object without touching it. They can also select topics or activities that encourage them to learn more. Rather than simply reading descriptions, visitors can explore the circumstances surrounding an ancient object or event.
+
+However, technology should not replace original objects completely. Historical objects contain information that digital versions cannot always provide, such as their physical condition, size, and material. Museums need to determine an appropriate balance. The right choice may differ depending on the museum, the visitors, and the objects being displayed. In some circumstances, a simple explanation may be more effective.
+
+Therefore, museums should use interactive technology as a supporting tool rather than a replacement for traditional displays. When used appropriately, it can strengthen visitors' learning experiences and encourage them to examine history more closely. Museums should select technology based on its educational purpose rather than simply because it is modern.`,q:"Which statement best summarizes the author's argument about the use of interactive technology in museums?",opts:["Museums should replace original objects with digital displays.","Museums should avoid using technology in historical exhibitions.","Museums should use technology appropriately to support traditional displays.","Museums should use technology mainly to attract young visitors.","Museums should allow visitors to choose all exhibition materials."],ans:[2]},
+{n:27,type:"TF",passage:`Should Museums Use More Interactive Technology?
+
+The author argues that interactive technology can support learning, but original objects remain important and technology should not completely replace traditional displays.`,q:"Based on the text, determine whether each statement is TRUE or FALSE.",rows:[["Interactive technology allows visitors to examine some objects without touching originals.",["TRUE","FALSE"]],["The author believes digital displays should completely replace traditional displays.",["TRUE","FALSE"]],["The usefulness of technology may depend on the type of museum and objects.",["TRUE","FALSE"]],["The text states that all young visitors prefer digital activities.",["TRUE","FALSE"]]],ans:["TRUE","FALSE","TRUE","FALSE"]},
+{n:28,type:"MC",passage:`Should Museums Use More Interactive Technology?
+
+The text explains that visitors can examine the appearance of historical objects through interactive technology without touching originals, while original objects still provide physical information such as condition, size, and material.`,q:"Why does the author suggest that interactive technology can be useful when displaying fragile historical objects?",opts:["It allows visitors to examine objects without physically touching the originals.","It removes all fragile objects from museum exhibitions.","It makes fragile objects easier for museums to purchase.","It allows museums to display larger historical collections.","It prevents museums from displaying original objects."],ans:[0]},
+{n:29,type:"FACTOP",passage:`Should Museums Use More Interactive Technology?
+
+The text states that interactive technology can make information accessible, while original objects remain important because digital versions cannot always provide physical condition, size, and material.`,q:"Determine whether each statement is a FACT or an OPINION based on the text.",rows:[["Interactive technology can allow visitors to examine digital images of historical objects.",["FACT","OPINION"]],["Original historical objects remain an important part of learning about history.",["FACT","OPINION"]],["Museums should use technology as a supporting tool rather than a replacement.",["FACT","OPINION"]],["Physical condition, size, and material cannot always be fully represented by a digital version.",["FACT","OPINION"]]],ans:["FACT","FACT","OPINION","FACT"]},
+{n:30,type:"MC",passage:`Should Museums Use More Interactive Technology?
+
+The author's argument is that technology can support museum learning when used appropriately, rather than simply because it is modern.`,q:"Which additional information would BEST strengthen the author's argument that interactive technology can support museum learning?",opts:["A survey comparing visitors' learning before and after interactive displays.","A list of ancient objects displayed in several museums.","The number of museums that have recently been renovated.","Information about the most expensive objects in museums.","The average amount of time visitors spend buying souvenirs."],ans:[0]}
+];
+const DEFAULT_API="https://script.google.com/macros/s/AKfycbxHVIF5hKtVLCZRzLO3zQ_t_jbvbQt1nPHD3JhL5RanR4YM0t2yQweSBp9dydTk0VbC/exec";let API=localStorage.getItem("TKA_V10_API")||DEFAULT_API,DATA=[],DETAIL_CACHE=new Map(),ANALYSIS_LIST_CACHE=new Map();
+const $=id=>document.getElementById(id);function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}function saveApi(){const v=$("api").value.trim();if(!v)return alert("Masukkan URL Web App.");API=v;localStorage.setItem("TKA_V10_API",v);init();loadData();}function init(){$("api").value=API;$("apiStatus").textContent="URL database tersimpan."}function params(){
+  const p=new URLSearchParams();
+  const date=$('date')?.value.trim()||'';
+  const cls=$('class')?.value.trim()||'';
+  const slot=$('slot')?.value.trim()||'';
+  const name=$('name')?.value.trim()||'';
+  if(date)p.set('date',date);
+  if(cls && cls!=='Semua kelas')p.set('class',cls);
+  /* "All the time" pada filter berarti tidak membatasi sesi. */
+  if(slot && slot!=='All the time' && slot!=='Semua sesi')p.set('slot',slot);
+  if(name && !/^semua siswa$/i.test(name))p.set('name',name);
+  return p;
+}
+
+function normalizeFilterDate(v){
+  if(v==null || v==='')return '';
+  const s=String(v).trim();
+  let m=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if(m)return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+  m=s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+  if(m){
+    const a=Number(m[1]),b=Number(m[2]),y=m[3];
+    /* Data Google Sheets kadang tampil M/D/YYYY dan kadang D/M/YYYY.
+       Kembalikan keduanya agar filter tidak salah membaca tanggal ambigu. */
+    return [
+      `${y}-${String(b).padStart(2,'0')}-${String(a).padStart(2,'0')}`,
+      `${y}-${String(a).padStart(2,'0')}-${String(b).padStart(2,'0')}`
+    ];
+  }
+  const d=new Date(s);
+  if(!Number.isNaN(d.getTime()))return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return s;
+}
+function dateMatchesFilter(value,selected){
+  if(!selected)return true;
+  const target=String(selected).trim();
+  const parsed=normalizeFilterDate(value);
+  return Array.isArray(parsed)?parsed.includes(target):parsed===target;
+}
+function normalizeFilterText(v){return String(v??'').trim().replace(/\s+/g,' ').toLowerCase();}
+function normalizeFilterSlot(v){return normalizeFilterText(v).replace(/[–—−]/g,'-').replace(/\s*-\s*/g,'-');}
+
+let loadingCount=0;
+function setLoading(on,text){const ov=$('loadingOverlay');if(on){loadingCount++;$('loadingText').textContent=text||'Memuat data…';ov.classList.add('show');}else{loadingCount=Math.max(0,loadingCount-1);if(!loadingCount)ov.classList.remove('show');}}
+function noCache(url){return url+(url.includes('?')?'&':'?')+'_='+Date.now();}
+async function loadData(btn,opts={}){
+  setLoading(true,opts.text||'Memuat data hasil siswa…');
+  try{
+    if(btn)btn.disabled=true;
+    const query=params().toString();
+    const r=await fetch(noCache(API+'?action=list&'+query),{cache:'no-store'});
+    const j=await r.json();
+    if(j && j.ok===false)throw new Error(j.error||'API error');
+    DATA=Array.isArray(j)?j:(j.data||[]);
+
+    /* Jika server mengembalikan kosong karena format tanggal/sesi berbeda,
+       ambil daftar terbaru tanpa filter dan cocokkan di sini. Filter lain
+       tetap persis mengikuti pilihan pengguna. */
+    const hasFilter=Boolean(query);
+    if(!DATA.length && hasFilter){
+      const allRes=await fetch(noCache(API+'?action=list'),{cache:'no-store'});
+      const allJson=await allRes.json();
+      const allData=Array.isArray(allJson)?allJson:(allJson.data||[]);
+      const selectedDate=$('date')?.value.trim()||'';
+      const selectedClass=$('class')?.value.trim()||'';
+      const selectedSlot=$('slot')?.value.trim()||'';
+      const selectedName=normalizeFilterText(($('name')?.value||'').replace(/^semua siswa$/i,''));
+      DATA=allData.filter(x=>{
+        if(!x || !x.attemptId)return false;
+        if(selectedDate && !dateMatchesFilter(x.date,selectedDate))return false;
+        if(selectedClass && selectedClass!=='Semua kelas' && normalizeFilterText(x.className)!==normalizeFilterText(selectedClass))return false;
+        if(selectedSlot && selectedSlot!=='All the time' && selectedSlot!=='Semua sesi' && normalizeFilterSlot(x.slot)!==normalizeFilterSlot(selectedSlot))return false;
+        if(selectedName && normalizeFilterText(x.name)!==selectedName)return false;
+        return true;
+      });
+    }
+
+    populateStudentFilter();render();populateAnalysisDates();
+    // Sinkronkan analisis dengan filter utama setiap kali filter utama diperbarui.
+    if($("questionAnalysisDate"))$("questionAnalysisDate").value=$('date')?.value||"";
+    if($("questionAnalysisSlot"))$("questionAnalysisSlot").value=$('slot')?.value||"";
+    if($("studentAnalysisDate"))$("studentAnalysisDate").value=$('date')?.value||"";
+    if($("studentAnalysisSlot"))$("studentAnalysisSlot").value=$('slot')?.value||"";
+    // Reset per-student analysis whenever the main data/filter is refreshed,
+    // so analysis from the previous student/filter is never left on screen.
+    const studentAttempt=$("studentAttempt");
+    const studentSummary=$("studentSummary");
+    const studentAnalysisBody=$("studentAnalysisBody");
+    if(studentAttempt) studentAttempt.value="";
+    if(studentSummary){ studentSummary.style.display='none'; studentSummary.innerHTML=''; }
+    if(studentAnalysisBody) studentAnalysisBody.innerHTML='<tr><td colspan="6" class="empty">Pilih siswa / Kode Tes untuk melihat jawaban.</td></tr>';
+    if(!opts.skipAnalysis) await loadAnalysis(null,{silent:true});
+  }catch(e){
+    $('tbody').innerHTML='<tr><td colspan="16" class="bad">Gagal memuat data: '+esc(e.message||e)+'</td></tr>';
+    if(!opts.silent)alert('Data belum berhasil dimuat. Periksa koneksi database.');
+  }finally{if(btn)btn.disabled=false;setLoading(false);}
+}
+function render(){
+  const rows=DATA.filter(x=>x && x.attemptId);
+  $('sAttempts').textContent=rows.length;
+  $('sAvg').textContent=rows.length?(rows.reduce((a,x)=>a+Number(x.score||0),0)/rows.length).toFixed(2):'—';
+  $('sCorrect').textContent=rows.reduce((a,x)=>a+Number(x.correct||0),0);
+  $('sWrong').textContent=rows.reduce((a,x)=>a+Number(x.wrong||0),0);
+  const body=$('tbody'); if(!body)return;
+  body.innerHTML=rows.length?rows.map(x=>`<tr><td><input type="checkbox" class="check rowcheck" value="${esc(x.attemptId)}"></td><td>${esc(formatAdminDate(x.date))}</td><td><b>${esc(x.name)}</b></td><td>${esc(x.phone||'')}</td><td>${esc(x.className||'')}</td><td>${esc(x.slot||'')}</td><td>${esc(x.attemptId)}</td><td class="ok">${esc(x.correct)}</td><td class="bad">${esc(x.wrong)}</td><td>${esc(x.blank)}</td><td><b>${esc(x.score)}</b></td><td>${esc(x.violations)}</td><td>${esc(x.durationMinutes)} min</td><td>${esc(formatAdminDateTime(x.finishedAt))}</td><td>${esc(x.finishReason||'—')}</td><td><button class="btn secondary" onclick="showDetail('${esc(x.attemptId)}','${esc(x.name)}','${esc(x.slot)}','${esc(x.score)}')">Lihat jawaban</button></td></tr>`).join(''):'<tr><td colspan="16" class="empty">Tidak ada data.</td></tr>';
+  const checkAll=$('checkAll'); if(checkAll)checkAll.checked=false;
+  populateStudentAttempts();
+}
+function formatAdminDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;return s}
+function formatAdminDateTime(v){if(!v)return '';return String(v)}
+function toggleAll(el){document.querySelectorAll('.rowcheck').forEach(x=>x.checked=el.checked)}
+function selected(){return [...document.querySelectorAll('.rowcheck:checked')].map(x=>x.value)}
+async function removeSelected(){const ids=selected();if(!ids.length)return alert('Centang data yang ingin dihapus.');if(!confirm(`Yakin mau menghapus ${ids.length} data? Data Attempts dan Responses untuk Kode Tes tersebut akan dihapus permanen.`))return;await remove({action:'delete',attemptIds:ids})}
+async function removeAll(){if(!DATA.filter(x=>x.attemptId).length)return alert('Tidak ada data.');if(!confirm('YAKIN mau menghapus SEMUA data hasil? Data Attempts dan Responses akan dihapus permanen dan tidak bisa dibatalkan.'))return;await remove({action:'delete',all:true})}
+async function remove(payload){
+  setLoading(true,'Menghapus data…');
+  try{
+    await fetch(noCache(API),{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),cache:'no-store'});
+    // Give Apps Script time to commit, then verify with fresh GETs.
+    let verified=false;
+    for(let attempt=0;attempt<4;attempt++){
+      await new Promise(r=>setTimeout(r,700));
+      const r=await fetch(noCache(API+'?action=list&'+params()),{cache:'no-store'});const j=await r.json();DATA=Array.isArray(j)?j:(j.data||[]);
+      const ids=new Set(payload.all?[]:(payload.attemptIds||[]).map(String));
+      verified=payload.all ? DATA.filter(x=>x.attemptId).length===0 : !DATA.some(x=>ids.has(String(x.attemptId)));
+      if(verified)break;
+    }
+    populateStudentFilter();render();populateStudentAttempts();
+    if(!verified)alert('Data belum terhapus dari database. Kemungkinan Web App Apps Script yang aktif masih versi lama. Dashboard tidak menghapus data secara lokal saja.');
+  }catch(e){alert('Gagal menghapus data: '+(e.message||e))}
+  finally{setLoading(false)}
+}
+function optionLetter(i){return String.fromCharCode(65+Number(i))}
+function questionByNo(n){return QUESTION_BANK.find(q=>Number(q.n)===Number(n))||null}
+function normalizeTokens(v){
+  if(v===null||v===undefined||v==='')return [];
+  let value=v;
+  if(typeof value==='string'){
+    const t=value.trim();
+    if(!t)return [];
+    try{const parsed=JSON.parse(t);if(Array.isArray(parsed))value=parsed;else if(parsed!==null && typeof parsed==='object')value=parsed;}catch(e){}
+  }
+  const arr=Array.isArray(value)?value:String(value).split(/\s*\|\s*|\s*,\s*/).map(x=>x.trim()).filter(Boolean);
+  return arr.map(x=>{const t=String(x).trim();if(/^[A-Ea-e]$/.test(t))return String(t.toUpperCase().charCodeAt(0)-65);return t;});
+}
+function normalizeAnswerForDisplay(v){return normalizeTokens(v)}
+function sameAnswer(a,b,q){
+  const A=normalizeTokens(a),B=normalizeTokens(b);
+  if(q && ['MC','MCMA'].includes(q.type)){return JSON.stringify(A.map(Number).sort((x,y)=>x-y))===JSON.stringify(B.map(Number).sort((x,y)=>x-y));}
+  return JSON.stringify(A.map(String))===JSON.stringify(B.map(String));
+}
+function displayAnswer(q,raw,correct,which,status){
+  if(!q)return esc(raw||'—');
+  if(q.type==='CAT'||q.type==='TF'||q.type==='FACTOP'){
+    const vals=normalizeTokens(raw); return vals.length?`<div class="answer-detail">${vals.map((v,i)=>`<div class="answer-option ${which==='correct'?'correct':which==='student'?(status==='Salah'?'wrong':status==='Benar'?'correct':'selected'):''}"><b>${esc(q.rows?.[i]?.[0]||('Baris '+(i+1)))}</b>: ${esc(v)}</div>`).join('')}</div>`:'—';
+  }
+  const vals=normalizeTokens(raw).map(Number).filter(Number.isFinite),opts=q.opts||[];
+  if(!vals.length)return '—';
+  return `<div class="answer-detail">${vals.map(i=>`<div class="answer-option ${which==='correct'?'correct':which==='student'?(status==='Salah'?'wrong':status==='Benar'?'correct':'selected'):''}"><b>${optionLetter(i)}.</b> ${esc(opts[i]??String(raw))}</div>`).join('')}</div>`;
+}
+async function showDetail(id,name,slot,score){
+  setLoading(true,'Memuat detail jawaban siswa…');
+  $('modalTitle').textContent='Detail Jawaban — '+name;$('modalMeta').textContent=`${slot} • ${id} • Nilai ${score}`;$('detailBody').innerHTML='<tr><td colspan="6" class="empty">Memuat…</td></tr>';$('modal').classList.add('show');
+  try{
+    const r=await fetch(noCache(API+'?action=detail&attemptId='+encodeURIComponent(id)),{cache:'no-store'});const j=await r.json();if(j&&j.ok===false)throw new Error(j.error||'API error');const pack=j.data||{};const rows=pack.rows||[];const a=pack.attempt||{};
+    $('modalMeta').textContent=`${a.className||''} • ${a.slot||slot} • ${a.mode||'STUDENT'} • ${id} • Benar ${a.correct??0} • Salah ${a.wrong??0} • Kosong ${a.blank??0} • Nilai ${a.score??score}`;
+    if(!rows.length){$('detailBody').innerHTML='<tr><td colspan="6" class="bad">Database belum mengirim detail jawaban untuk attempt ini. Data ringkasan tersedia, tetapi Responses untuk attempt ini belum tersedia di API.</td></tr>';$('studentSummary').style.display='block';$('studentSummary').innerHTML=`<b>${esc(a.name||name)}</b> • Benar <span class="ok">${a.correct??0}</span> • Salah <span class="bad">${a.wrong??0}</span> • Kosong ${a.blank??0} • Nilai <b>${a.score??score}</b>`;}else{renderDetailRows($('detailBody'),rows);showStudentAnalysisFromData(a,rows)}
+  }catch(e){$('detailBody').innerHTML='<tr><td colspan="6" class="bad">Gagal mengambil detail: '+esc(e.message||e)+'</td></tr>'}finally{setLoading(false)}
+}
+function enrichRows(rows){
+  const map=new Map((rows||[]).map(x=>[Number(x.question),x]));
+  return Array.from({length:30},(_,idx)=>{
+    const n=idx+1,q=questionByNo(n),x=map.get(n)||{};
+    const student=x.studentAnswer??x.answer??'';
+    const correct=x.correctAnswer??q?.ans??'';
+    let status=String(x.status||'').trim();
+    if(!['Benar','Salah','Tidak terisi','Tidak Terisi'].includes(status)) status=normalizeTokens(student).length?(sameAnswer(student,correct,q)?'Benar':'Salah'):'Tidak terisi';
+    if(status==='Tidak Terisi')status='Tidak terisi';
+    return {question:n,type:x.type||q?.type||'',questionText:x.questionText||q?.q||'',studentAnswer:student,correctAnswer:correct,status};
+  });
+}
+function renderDetailRows(target,rows){
+  if(!target)return;
+  const full=enrichRows(rows);
+  target.innerHTML=full.map(x=>`<tr><td><b>${x.question}</b></td><td>${esc(x.type)}</td><td>${esc(x.questionText)}</td><td>${displayAnswer(questionByNo(x.question),x.studentAnswer,null,'student',x.status)}</td><td>${displayAnswer(questionByNo(x.question),x.correctAnswer,null,'correct')}</td><td class="${x.status==='Benar'?'ok':x.status==='Salah'?'bad':'muted'}"><b>${esc(x.status)}</b></td></tr>`).join('');
+}
+
+function closeModal(){$('modal').classList.remove('show')}
+async function fetchDetailCached(attemptId){
+  const id=String(attemptId||'');
+  if(!id)return null;
+  if(DETAIL_CACHE.has(id))return DETAIL_CACHE.get(id);
+  const promise=fetch(noCache(API+'?action=detail&attemptId='+encodeURIComponent(id)),{cache:'no-store'})
+    .then(r=>r.json())
+    .then(j=>{if(j&&j.ok===false)throw new Error(j.error||'API error');return j.data||{};})
+    .catch(e=>{DETAIL_CACHE.delete(id);throw e;});
+  DETAIL_CACHE.set(id,promise);
+  return promise;
+}
+
+async function fetchAnalysisFallback(sourceRows){
+  const rows=(sourceRows||analysisQuestionRows()).filter(x=>x&&x.attemptId);
+  const results=await Promise.all(rows.map(a=>fetchDetailCached(a.attemptId).catch(()=>null)));
+  const agg={};
+  results.forEach((pack,idx)=>{
+    if(!pack)return;
+    const student=rows[idx];
+    const full=enrichRows(pack.rows||[]);
+    full.forEach(x=>{
+      if(!agg[x.question])agg[x.question]={question:x.question,text:x.questionText,benar:0,salah:0,kosong:0,total:rows.length,namesBenar:[],namesSalah:[]};
+      const item=agg[x.question];
+      if(x.status==='Benar'){item.benar++;if(student.name)item.namesBenar.push(student.name);}
+      else if(x.status==='Salah'){item.salah++;if(student.name)item.namesSalah.push(student.name);}
+      else item.kosong++;
+    });
+  });
+  const items=Array.from({length:30},(_,i)=>agg[i+1]||{question:i+1,text:questionByNo(i+1)?.q||'',benar:0,salah:0,kosong:0,total:rows.length,namesBenar:[],namesSalah:[]})
+    .map(x=>({...x,pctBenar:x.total?+(x.benar/x.total*100).toFixed(1):0,pctSalah:x.total?+(x.salah/x.total*100).toFixed(1):0,
+      namesBenar:[...new Set(x.namesBenar)],namesSalah:[...new Set(x.namesSalah)]}));
+  return {items,correct:[...items].sort((a,b)=>b.benar-a.benar||a.question-b.question),wrong:[...items].sort((a,b)=>b.salah-a.salah||a.question-b.question)};
+}
+
+function analysisQuestionRows(){
+  const d=$("questionAnalysisDate")?.value||"",s=$("questionAnalysisSlot")?.value||"";
+  return DATA.filter(x=>x&&x.attemptId&&dateMatchesFilter(x.date,d)&&(!s||s==="All the time"||normalizeFilterSlot(x.slot)===normalizeFilterSlot(s)));
+}
+
+async function loadAnalysis(btn,opts={}){
+  if(!opts.silent)setLoading(true,'Memuat analisis soal…');
+  try{
+    if(btn)btn.disabled=true;
+    const filteredRows=analysisQuestionRows();
+    const result=filteredRows.length?await fetchAnalysisFallback(filteredRows):{items:[],correct:[],wrong:[]};
+    const renderRows=(arr,kind)=>arr.map(x=>`<tr><td>${esc(x.question)}</td><td>${esc(x.text||questionByNo(x.question)?.q||'')}</td><td class="${kind==='correct'?'ok':'bad'}">${esc(kind==='correct'?x.benar:x.salah)}</td><td>${esc(kind==='correct'?x.pctBenar:x.pctSalah)}%</td><td>${esc((kind==='correct'?x.namesBenar:x.namesSalah).join(', ')||'—')}</td></tr>`).join('');
+    const correctEl=$('bestCorrect'),wrongEl=$('bestWrong');
+    if(correctEl)correctEl.innerHTML=result.correct.length?renderRows(result.correct,'correct'):'<tr><td colspan="5" class="empty">Tidak ada data.</td></tr>';
+    if(wrongEl)wrongEl.innerHTML=result.wrong.length?renderRows(result.wrong,'wrong'):'<tr><td colspan="5" class="empty">Tidak ada data.</td></tr>';
+  }catch(e){
+    if($('bestCorrect'))$('bestCorrect').innerHTML='<tr><td colspan="5" class="bad">Gagal memuat analisis: '+esc(e.message||e)+'</td></tr>';
+    if($('bestWrong'))$('bestWrong').innerHTML='<tr><td colspan="5" class="bad">Gagal memuat analisis: '+esc(e.message||e)+'</td></tr>';
+  }finally{if(btn)btn.disabled=false;if(!opts.silent)setLoading(false)}
+}
+
+function populateStudentFilter(){
+  const input=$("name"), list=$("studentNameList");
+  if(!input || !list)return;
+  const current=input.value;
+  const names=[...new Set(DATA.filter(x=>x.attemptId).map(x=>x.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  list.innerHTML='<option value="Semua siswa"></option>'+names.map(n=>`<option value="${esc(n)}"></option>`).join('');
+  input.value=current;
+}
+function studentAnalysisRows(){
+  const d=$("studentAnalysisDate")?.value||"",s=$("studentAnalysisSlot")?.value||"";
+  return DATA.filter(x=>x&&x.attemptId&&dateMatchesFilter(x.date,d)&&(!s||s==="All the time"||normalizeFilterSlot(x.slot)===normalizeFilterSlot(s)));
+}
+function populateAnalysisDates(){
+  const dates=[...new Set(DATA.filter(x=>x&&x.attemptId).map(x=>normalizeFilterDate(x.date)).flat().filter(Boolean))].sort().reverse();
+  [$("questionAnalysisDate"),$("studentAnalysisDate")].forEach(sel=>{
+    if(!sel)return;
+    const current=sel.value;
+    sel.innerHTML='<option value="">Semua tanggal</option>'+dates.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+    if(dates.includes(current))sel.value=current;
+  });
+}
+async function populateStudentAttempts(){
+  const sel=$("studentAttempt");
+  if(!sel)return;
+
+  const current=sel.value;
+  const d=$("studentAnalysisDate")?.value||"";
+  const s=$("studentAnalysisSlot")?.value||"";
+  const matches=(rows)=> (rows||[]).filter(x=>x&&x.attemptId&&dateMatchesFilter(x.date,d)&&(!s||s==="All the time"||s==="Semua sesi"||normalizeFilterSlot(x.slot)===normalizeFilterSlot(s)));
+
+  /*
+     Analisis Jawaban per Siswa harus memakai pasangan tanggal + sesi yang
+     sedang dipilih. Gunakan DATA yang sudah dimuat terlebih dahulu agar cepat.
+     Jika DATA utama tidak mencakup pilihan analisis, baru ambil data dari API.
+     Tidak mengubah bagian dashboard/analisis lain.
+  */
+  let rows=matches(DATA);
+
+  try{
+    if(!rows.length){
+      const p=new URLSearchParams();
+      if(d)p.set('date',d);
+      if(s&&s!=="All the time"&&s!=="Semua sesi")p.set('slot',s);
+
+      const r=await fetch(noCache(API+'?action=list&'+p.toString()),{cache:'no-store'});
+      const j=await r.json();
+      if(j&&j.ok===false)throw new Error(j.error||'API error');
+      const apiRows=Array.isArray(j)?j:(j.data||[]);
+      rows=matches(apiRows);
+
+      /*
+         Bila endpoint list dengan parameter tanggal/sesi mengembalikan format
+         yang tidak cocok, ambil daftar lengkap sekali lalu filter di browser.
+         Ini memastikan nama siswa tetap muncul sesuai tanggal + sesi.
+      */
+      if(!rows.length && (d||s)){
+        const rAll=await fetch(noCache(API+'?action=list'),{cache:'no-store'});
+        const jAll=await rAll.json();
+        if(jAll&&jAll.ok===false)throw new Error(jAll.error||'API error');
+        const allRows=Array.isArray(jAll)?jAll:(jAll.data||[]);
+        rows=matches(allRows);
+      }
+    }
+  }catch(e){
+    /* Tetap gunakan DATA lokal bila API sedang lambat/gagal. */
+    rows=matches(DATA);
+  }
+
+  rows.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+  sel.innerHTML='<option value="">Pilih siswa / Kode Tes</option>'+rows.map(x=>`<option value="${esc(x.attemptId)}">${esc(x.name||'Nama tidak tersedia')} — ${esc(x.attemptId)} — Nilai ${esc(x.score??0)}</option>`).join('');
+  if(rows.some(x=>String(x.attemptId)===String(current)))sel.value=current;
+}
+
+function showStudentAnalysisFromData(a,rows){
+  const full=enrichRows(rows); const correct=full.filter(x=>x.status==='Benar').map(x=>x.question); const wrong=full.filter(x=>x.status==='Salah').map(x=>x.question); const blank=full.filter(x=>x.status==='Tidak terisi').map(x=>x.question);
+  const summary=$("studentSummary");summary.style.display='block';summary.innerHTML=`<b>${esc(a.name||'')}</b> • Benar <span class="ok">${correct.length}</span> • Salah <span class="bad">${wrong.length}</span> • Kosong ${blank.length} • Nilai <b>${a.score??0}</b><br><span class="num-list">Nomor benar: ${correct.length?correct.join(', '):'—'}<br>Nomor salah: ${wrong.length?wrong.join(', '):'—'}<br>Nomor kosong: ${blank.length?blank.join(', '):'—'}</span>`;
+  renderDetailRows($("studentAnalysisBody"),rows);
+}
+
+async function loadStudentAnalysis(idFromDetail){
+  const id=idFromDetail||$('studentAttempt').value;if(!id){alert('Pilih siswa / Kode Tes terlebih dahulu.');return;}
+  setLoading(true,'Memuat jawaban siswa…');const row=DATA.find(x=>x.attemptId===id)||{};
+  try{
+    const r=await fetch(noCache(API+'?action=detail&attemptId='+encodeURIComponent(id)),{cache:'no-store'});const j=await r.json();if(j&&j.ok===false)throw new Error(j.error||'API error');
+    const pack=j.data||{},rows=pack.rows||[],a=pack.attempt||row||{};
+    if(!rows.length){$('studentSummary').style.display='block';$('studentSummary').innerHTML=`<b>${esc(a.name||row.name||'')}</b> • Benar <span class="ok">${a.correct??0}</span> • Salah <span class="bad">${a.wrong??0}</span> • Kosong ${a.blank??0} • Nilai <b>${a.score??0}</b>`;$('studentAnalysisBody').innerHTML='<tr><td colspan="6" class="bad">Tidak ada detail jawaban pada database untuk attempt ini. Pastikan Apps Script versi terbaru sudah dideploy.</td></tr>';}else showStudentAnalysisFromData(a,rows);
+  }catch(e){$('studentAnalysisBody').innerHTML='<tr><td colspan="6" class="bad">Gagal mengambil data jawaban siswa: '+esc(e.message||e)+'</td></tr>';}finally{setLoading(false)}
+}
+
+function resetQuestionAnalysisFilters(){
+  if($("questionAnalysisDate"))$("questionAnalysisDate").value="";
+  if($("questionAnalysisSlot"))$("questionAnalysisSlot").value="";
+  loadAnalysis(null);
+}
+function resetStudentAnalysisFilters(){
+  if($("studentAnalysisDate"))$("studentAnalysisDate").value="";
+  if($("studentAnalysisSlot"))$("studentAnalysisSlot").value="";
+  populateStudentAttempts();
+  if($("studentAttempt"))$("studentAttempt").value="";
+  $("studentSummary").style.display="none";
+  $("studentAnalysisBody").innerHTML='<tr><td colspan="6" class="empty">Pilih siswa / Kode Tes untuk melihat jawaban.</td></tr>';
+}
+function initAnalysisFilters(){
+  populateAnalysisDates();
+  [$("questionAnalysisDate"),$("questionAnalysisSlot")].forEach(el=>{if(el)el.addEventListener("change",()=>loadAnalysis(null));});
+  [$("studentAnalysisDate"),$("studentAnalysisSlot")].forEach(el=>{if(el)el.addEventListener("change",()=>{populateStudentAttempts();if($("studentAttempt"))$("studentAttempt").value="";$("studentSummary").style.display="none";$("studentAnalysisBody").innerHTML='<tr><td colspan="6" class="empty">Pilih siswa / Kode Tes untuk melihat jawaban.</td></tr>';});});
+  populateStudentAttempts();
+}
+function resetFilters(btn){['date','class','slot','name'].forEach(id=>$(id).value='');loadData(btn)}function downloadCSV(){if(!DATA.length)return alert('Tidak ada data.');setLoading(true,'Menyiapkan CSV…');const keys=['date','name','email','phone','className','slot','attemptId','correct','wrong','blank','score','violations','durationMinutes','finishedAt','finishReason'];const csv=[keys.join(','),...DATA.map(r=>keys.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='TKA_SMA_2026_Hasil.csv';a.click();setTimeout(()=>setLoading(false),250)}function downloadExcel(){if(!DATA.length)return alert('Tidak ada data.');setLoading(true,'Menyiapkan Excel…');const rows=DATA.map(r=>({Tanggal:r.date,Nama:r.name,Email:r.email,WA:r.phone,Kelas:r.className,Sesi:r.slot,Kode_Tes:r.attemptId,Benar:r.correct,Salah:r.wrong,Kosong:r.blank,Nilai:r.score,Pelanggaran:r.violations,Durasi_Menit:r.durationMinutes,Waktu_Selesai:r.finishedAt,Penyebab_Selesai:r.finishReason}));const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);XLSX.utils.book_append_sheet(wb,ws,'Hasil');XLSX.writeFile(wb,'TKA_SMA_2026_Hasil.xlsx');setTimeout(()=>setLoading(false),250)}
+window.addEventListener('DOMContentLoaded',()=>{init();initAnalysisFilters();loadData()});
+</script></body></html>
