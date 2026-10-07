@@ -1483,37 +1483,25 @@ let violationStartedAt=0;
 let violationTimer=null;
 let awaySignalTimer=null;
 let warningDialogActive=false;
+let violationConfirmed=false;
 
 /*
   ANTI-CHEAT RULES
-  - One tab/app switch = one violation, even if both blur and visibilitychange fire.
-  - Returning within 7 seconds = warning only.
-  - Returning after 7 seconds = auto-submit and show result.
-  - No freeze screen. The student is taken directly to the result page.
+  - Leaving the exam for less than 7 seconds = no warning and no violation.
+  - Leaving the exam for more than 7 seconds = 1 confirmed violation + warning.
+  - The 3rd confirmed violation ends the attempt automatically.
+  - One tab/app switch is treated as one episode, even if blur and visibilitychange fire.
 */
 function startViolationWindow(){
   // Anti-cheat is active ONLY after the student has successfully started the exam.
   // Registration/biodata pages are never counted as violations.
-  // A native warning dialog can itself trigger blur/focus events on some phones,
-  // so those events are explicitly ignored while the warning is open.
   if(!state || state.status!=="exam" || violationActive || warningDialogActive) return;
 
   violationActive=true;
+  violationConfirmed=false;
   violationStartedAt=Date.now();
-  state.violationCount=(Number(state.violationCount)||0)+1;
   state.violationStartedAt=violationStartedAt;
   save();
-
-  const count=Number(state.violationCount||0);
-
-  // The 3rd DISTINCT tab/app switch ends the attempt immediately.
-  // The 7-second rule still applies to the first and second violations.
-  if(count>=3){
-    finishExam(true,"Pelanggaran ke-3 tab/aplikasi");
-    return;
-  }
-
-  sendResultsToGoogle(false);
 
   const started=violationStartedAt;
   if(violationTimer) clearTimeout(violationTimer);
@@ -1523,9 +1511,29 @@ function startViolationWindow(){
 
     const elapsed=Date.now()-started;
     if(elapsed>=7000){
-      finishExam(true,"Pelanggaran tab/aplikasi > 7 detik");
+      confirmViolation();
     }
   },7100);
+}
+
+function confirmViolation(){
+  if(!state || state.status!=="exam" || !violationActive || violationConfirmed) return;
+
+  violationConfirmed=true;
+  state.violationCount=(Number(state.violationCount)||0)+1;
+  save();
+
+  const count=Number(state.violationCount||0);
+
+  // The 3rd confirmed violation ends the attempt automatically.
+  if(count>=3){
+    finishExam(true,"Pelanggaran ke-3 tab/aplikasi > 7 detik");
+    return;
+  }
+
+  // Save the confirmed violation to the backend, but do not show anything
+  // until the student returns to the exam page.
+  sendResultsToGoogle(false);
 }
 
 function handleReturnFromViolation(){
@@ -1539,32 +1547,42 @@ function handleReturnFromViolation(){
 
   if(violationTimer){clearTimeout(violationTimer);violationTimer=null;}
 
-  // Lock this episode BEFORE opening the warning. This is important on Android:
-  // opening/dismissing alert() may generate blur/focus events of its own.
+  // Less than 7 seconds: completely ignore the episode.
+  if(elapsed<7000 && !violationConfirmed){
+    violationActive=false;
+    violationConfirmed=false;
+    violationStartedAt=0;
+    state.violationStartedAt=0;
+    save();
+    return;
+  }
+
+  // Mobile browsers may throttle timers while the page is hidden, so confirm
+  // the violation here as a fallback when the student returns after 7 seconds.
+  if(elapsed>=7000 && !violationConfirmed){
+    confirmViolation();
+    if(!state || state.status!=="exam") return;
+  }
+
+  // Lock this episode BEFORE opening the warning. This prevents the alert()
+  // itself from generating another anti-cheat event on some phones.
+  const count=Number(state.violationCount||0);
   violationActive=false;
+  violationConfirmed=false;
   violationStartedAt=0;
   state.violationStartedAt=0;
   save();
 
-  if(elapsed>=7000){
-    finishExam(true,"Pelanggaran tab/aplikasi > 7 detik");
-    return;
-  }
-
-  const count=Number(state.violationCount||0);
-  const remaining=Math.max(1,Math.ceil((7000-elapsed)/1000));
-
   warningDialogActive=true;
   try{
     alert(`PERINGATAN ${count}/3
-Kamu berpindah tab atau membuka aplikasi lain.
-Kembali ke simulasi dalam batas 7 detik. Sisa toleransi: ${remaining} detik.
-Jika melewati 7 detik, simulasi akan otomatis disubmit.`);
+Kamu berada di luar halaman simulasi lebih dari 7 detik.
+Ini tercatat sebagai pelanggaran ${count}/3.
+Pelanggaran ke-3 akan mengakhiri simulasi secara otomatis.`);
   }finally{
     warningDialogActive=false;
   }
 
-  // Re-render from the saved state only after the warning is dismissed.
   renderExam();
 }
 
